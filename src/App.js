@@ -1,13 +1,17 @@
-import './App.css';
+import { useState } from 'react';
+
 import Scanner from './scanner';
 
-import { useState } from 'react';
+import VConsole from 'vconsole';
+import './App.css';
+
+const vConsole = new VConsole();
 
 function App() {
   const [start, setStart] = useState(false)
   return (
     <div className="App">
-      <div style={{padding: 15, border: '1px red'}} onClick={() => setStart(true)}>开始扫描啊🤔</div>
+      <button onClick={() => setStart(true)}>开始扫描啊🤔</button>
       {start &&
         <Scanner
           onShowQrReaderToggle={() => setStart(false)}
