@@ -9,8 +9,8 @@ class Scanner extends React.Component {
   }
 
   componentDidMount() {
-    const _hasCamera = this.hasCamera();
-    if (!_hasCamera) return;
+    // const _hasCamera = this.hasCamera();
+    // if (!_hasCamera) return;
     this.loadCameraData();
     // document.addEventListener('click', this.onCloseCamera)
   }
