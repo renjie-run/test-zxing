@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserMultiFormatReader } from '@zxing/library';
+import 'webrtc-adapter';
 
 class Scanner extends React.Component {
 
