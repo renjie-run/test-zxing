@@ -7,7 +7,7 @@ function App() {
   const [start, setStart] = useState(false)
   return (
     <div className="App">
-      <button onClick={() => setStart(true)}>开始扫描🤔</button>
+      <div style={{padding: 15, border: '1px red'}} onClick={() => setStart(true)}>开始扫描啊🤔</div>
       {start &&
         <Scanner
           onShowQrReaderToggle={() => setStart(false)}
