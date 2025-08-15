@@ -1,46 +1,51 @@
 import React from 'react';
-import { BrowserMultiFormatReader } from '@zxing/library';
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 import 'webrtc-adapter';
 
 class Scanner extends React.Component {
-
   constructor(props) {
     super(props);
     this.codeReader = new BrowserMultiFormatReader();
+    this.scanned = false; // 新增：防止重复触发
+    this.state = {
+      resultText: ''
+    };
   }
 
   componentDidMount() {
-    // const _hasCamera = this.hasCamera();
-    // if (!_hasCamera) return;
     this.loadCameraData();
-    // document.addEventListener('click', this.onCloseCamera)
   }
 
   componentWillUnmount() {
-    // document.removeEventListener('click', this.onCloseCamera)
-  }
-
-  hasCamera = () => {
-    return navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+    this.codeReader.reset(); // 卸载时关闭摄像头
   }
 
   loadCameraData = () => {
-    this.codeReader.getVideoInputDevices().then((videoInputDevices) => {
-      this.codeReader.decodeFromInputVideoDeviceContinuously(undefined, 'video', (result, err) => {
-        if (!this.scanRef.style.animation) {
-          this.scanRef.style.animation = 'scanCode 3s linear infinite';
+    this.codeReader.listVideoInputDevices()
+      .then((videoInputDevices) => {
+        if (videoInputDevices.length === 0) {
+          console.error('没有检测到摄像头');
+          return;
         }
-        if (result) {
-          console.log(result)
-          // this.props.changeInputValue(result.text);
-        }
-      });
-    });
-  }
+        const firstDeviceId = videoInputDevices[0].deviceId;
 
-  onCloseCamera = () => {
-    this.codeReader.reset();
-    this.props.onShowQrReaderToggle();
+        this.codeReader.decodeFromVideoDevice(firstDeviceId, 'video', (result, error) => {
+          if (result && !this.scanned) {
+            console.log('识别结果：', result.text);
+            this.setState({ resultText: result.text }, () => {
+              this.codeReader.reset();
+              this.scanned = true;
+            });
+          }
+
+          if (error && !(error instanceof NotFoundException)) {
+            console.error(error);
+          }
+        });
+      })
+      .catch((error) => {
+        console.error('摄像头初始化失败', error);
+      });
   }
 
   render() {
@@ -51,6 +56,7 @@ class Scanner extends React.Component {
           width="300"
           height="200"
         ></video>
+        结果是：{this.state.resultText}
       </div>
     );
   }
